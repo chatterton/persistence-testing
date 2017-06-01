@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -15,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Inject UserDao userDao;
 
+    private TextView userList;
     private EditText firstName;
     private EditText lastName;
 
@@ -26,9 +30,11 @@ public class MainActivity extends AppCompatActivity {
         ((App)getApplication()).getActivityComponent().inject(this);
         Log.i("_JC", "here's the userdao: "+userDao);
 
+        userList = (TextView)findViewById(R.id.main_userlist);
         firstName = (EditText)findViewById(R.id.main_firstname);
         lastName = (EditText)findViewById(R.id.main_lastname);
 
+        updateList();
     }
 
     public void addButtonClicked(View view) {
@@ -41,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
             new Thread(new Runnable() {
                 public void run() {
                     userDao.insertAll(newUser);
+                    updateList();
                 }
             }).start();
             firstName.setText("");
@@ -49,6 +56,24 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.e("_JC", "name is fully or partially blank");
         }
+    }
+
+    private void updateList() {
+        new Thread(new Runnable() {
+            public void run() {
+                List<UserEntity> users = userDao.getAll();
+                final StringBuilder sb = new StringBuilder();
+                for (UserEntity user : users) {
+                    sb.append(user.firstName + " " + user.lastName + "\n");
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        userList.setText(sb.toString());
+                    }
+                });
+            }
+        }).start();
     }
 
 }
