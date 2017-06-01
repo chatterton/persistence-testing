@@ -5,9 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import javax.inject.Inject;
+
 import jc.testing.roomtest.persistence.RoomTestDatabase;
 
 public class MainActivity extends AppCompatActivity {
+
+    @Inject App application;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +20,11 @@ public class MainActivity extends AppCompatActivity {
 
         RoomTestDatabase db = Room.databaseBuilder(getApplicationContext(), RoomTestDatabase.class, "room-test-database").build();
 
-        Log.i("JC", "here's the database: "+db);
+        Log.i("_JC", "here's the database: "+db);
+
+        ((App)getApplication()).getActivityComponent().inject(this);
+
+        Log.i("_JC", "here's our application: "+application);
 
     }
 }
