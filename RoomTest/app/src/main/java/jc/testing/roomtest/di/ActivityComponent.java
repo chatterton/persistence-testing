@@ -6,7 +6,7 @@ import dagger.Component;
 import jc.testing.roomtest.MainActivity;
 
 @Singleton
-@Component(modules = { ApplicationModule.class })
+@Component(modules = { ApplicationModule.class, PersistenceModule.class })
 public interface ActivityComponent {
 
     void inject(MainActivity screen);
