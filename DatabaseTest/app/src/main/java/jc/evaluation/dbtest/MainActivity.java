@@ -11,8 +11,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import jc.evaluation.dbtest.persistence.UserEntity;
-import jc.evaluation.dbtest.persistence.UserDao;
+import jc.evaluation.dbtest.persistence.room.UserEntity;
+import jc.evaluation.dbtest.persistence.room.UserDao;
 
 public class MainActivity extends AppCompatActivity {
 

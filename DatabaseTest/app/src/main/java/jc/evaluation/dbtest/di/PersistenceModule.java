@@ -7,8 +7,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import jc.evaluation.dbtest.App;
-import jc.evaluation.dbtest.persistence.RoomTestDatabase;
-import jc.evaluation.dbtest.persistence.UserDao;
+import jc.evaluation.dbtest.persistence.room.RoomTestDatabase;
+import jc.evaluation.dbtest.persistence.room.UserDao;
 
 @Module
 public class PersistenceModule {
