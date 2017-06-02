@@ -1,0 +1,32 @@
+package jc.evaluation.dbtest;
+
+import android.app.Application;
+
+import jc.evaluation.dbtest.di.ActivityComponent;
+import jc.evaluation.dbtest.di.ApplicationComponent;
+import jc.evaluation.dbtest.di.ApplicationModule;
+import jc.evaluation.dbtest.di.DaggerActivityComponent;
+import jc.evaluation.dbtest.di.DaggerApplicationComponent;
+
+public class App extends Application {
+
+    private ActivityComponent activityComponent;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        ApplicationComponent applicationComponent = DaggerApplicationComponent.builder().build();
+        applicationComponent.inject(this);
+
+        activityComponent = DaggerActivityComponent.builder()
+                .applicationModule(new ApplicationModule(this))
+                .build();
+    }
+
+
+    public ActivityComponent getActivityComponent() {
+        return activityComponent;
+    }
+
+}
