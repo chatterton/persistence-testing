@@ -1,5 +1,6 @@
 package jc.evaluation.dbtest.persistence.realm;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -16,6 +17,8 @@ public class RealmUserEntity extends RealmObject implements User {
     @Required
     public String lastName;
 
+    public RealmList<RealmClickEntity> clicks;
+
     @Override
     public String getName() {
         return firstName + " " + lastName;
@@ -23,7 +26,7 @@ public class RealmUserEntity extends RealmObject implements User {
 
     @Override
     public int getClicks() {
-        return -1;
+        return clicks.size();
     }
 
 }

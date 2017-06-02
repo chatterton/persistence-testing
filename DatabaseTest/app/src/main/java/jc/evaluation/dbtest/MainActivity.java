@@ -99,10 +99,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void handleUserClick(User user) {
+        switch (mode) {
+            case REALM:
+                userService.addClickToUser((RealmUserEntity) user);
+                break;
+            case ROOM:
+                break;
+        }
+    }
+
     private void appendToList(User user) {
         Button button = new Button(this);
         button.setTag(user);
         button.setText(user.getName()+": "+user.getClicks());
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleUserClick((User)v.getTag());
+            }
+        });
         userList.addView(button);
     }
 

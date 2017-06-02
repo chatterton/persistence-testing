@@ -1,5 +1,6 @@
 package jc.evaluation.dbtest.persistence.realm;
 
+import java.util.Date;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -21,6 +22,14 @@ public class RealmUserService {
         user.lastName = lastName;
         realm.commitTransaction();
         return user;
+    }
+
+    public void addClickToUser(RealmUserEntity user) {
+        realm.beginTransaction();
+        RealmClickEntity click = realm.createObject(RealmClickEntity.class);
+        click.timestamp = new Date();
+        user.clicks.add(click);
+        realm.commitTransaction();
     }
 
     public RealmResults<RealmUserEntity> getAll() {
