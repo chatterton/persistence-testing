@@ -7,23 +7,24 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
+import jc.evaluation.dbtest.persistence.realm.RealmUserEntity;
 import jc.evaluation.dbtest.persistence.realm.RealmUserService;
-import jc.evaluation.dbtest.persistence.room.UserEntity;
 import jc.evaluation.dbtest.persistence.room.UserDao;
 
 public class MainActivity extends AppCompatActivity {
 
     @Inject UserDao userDao;
-
     @Inject RealmUserService userService;
 
     private TextView userList;
     private EditText firstName;
     private EditText lastName;
+
+    private RealmResults<RealmUserEntity> userListResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,13 @@ public class MainActivity extends AppCompatActivity {
         firstName = (EditText)findViewById(R.id.main_firstname);
         lastName = (EditText)findViewById(R.id.main_lastname);
 
+        userListResults = userService.getAll();
+        userListResults.addChangeListener(new RealmChangeListener<RealmResults<RealmUserEntity>>() {
+            @Override
+            public void onChange(RealmResults<RealmUserEntity> realmUserEntities) {
+                updateList();
+            }
+        });
         updateList();
     }
 
@@ -45,15 +53,7 @@ public class MainActivity extends AppCompatActivity {
         String first = firstName.getText().toString();
         String last = lastName.getText().toString();
         if (!first.isEmpty() && !last.isEmpty()) {
-            final UserEntity newUser = new UserEntity();
-            newUser.firstName = first;
-            newUser.lastName = last;
-            new Thread(new Runnable() {
-                public void run() {
-                    userDao.insertAll(newUser);
-                    updateList();
-                }
-            }).start();
+            userService.createUser(first, last);
             firstName.setText("");
             lastName.setText("");
             firstName.requestFocus();
@@ -63,21 +63,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateList() {
-        new Thread(new Runnable() {
-            public void run() {
-                List<UserEntity> users = userDao.getAll();
-                final StringBuilder sb = new StringBuilder();
-                for (UserEntity user : users) {
-                    sb.append(user.firstName + " " + user.lastName + "\n");
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        userList.setText(sb.toString());
-                    }
-                });
-            }
-        }).start();
+        final StringBuilder sb = new StringBuilder();
+        for (RealmUserEntity user : userListResults) {
+            sb.append(user.firstName);
+            sb.append(" ");
+            sb.append(user.lastName);
+            sb.append("\n");
+        }
+        userList.setText(sb.toString());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        userListResults.removeAllChangeListeners();
+        userService.finish();
     }
 
 }

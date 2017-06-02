@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class RealmUserService {
 
@@ -20,6 +21,11 @@ public class RealmUserService {
         user.lastName = lastName;
         realm.commitTransaction();
         return user;
+    }
+
+    public RealmResults<RealmUserEntity> getAll() {
+        return realm.where(RealmUserEntity.class)
+                .findAllSortedAsync("lastName");
     }
 
     public void finish() {
