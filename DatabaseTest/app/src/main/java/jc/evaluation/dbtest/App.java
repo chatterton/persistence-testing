@@ -2,6 +2,7 @@ package jc.evaluation.dbtest;
 
 import android.app.Application;
 
+import io.realm.Realm;
 import jc.evaluation.dbtest.di.ActivityComponent;
 import jc.evaluation.dbtest.di.ApplicationComponent;
 import jc.evaluation.dbtest.di.ApplicationModule;
@@ -22,6 +23,9 @@ public class App extends Application {
         activityComponent = DaggerActivityComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+        // Initialize Realm. Should only be done once when the application starts.
+        Realm.init(this);
     }
 
 
