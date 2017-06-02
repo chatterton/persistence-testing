@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.realm.RealmChangeListener;
@@ -15,6 +17,7 @@ import io.realm.RealmResults;
 import jc.evaluation.dbtest.persistence.realm.RealmUserEntity;
 import jc.evaluation.dbtest.persistence.realm.RealmUserService;
 import jc.evaluation.dbtest.persistence.room.UserDao;
+import jc.evaluation.dbtest.persistence.room.UserEntity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,7 +63,22 @@ public class MainActivity extends AppCompatActivity {
         String first = firstName.getText().toString();
         String last = lastName.getText().toString();
         if (!first.isEmpty() && !last.isEmpty()) {
-            userService.createUser(first, last);
+            switch (mode) {
+                case REALM:
+                    userService.createUser(first, last);
+                    break;
+                case ROOM:
+                    final UserEntity newUser = new UserEntity();
+                    newUser.firstName = first;
+                    newUser.lastName = last;
+                    new Thread(new Runnable() {
+                        public void run() {
+                            userDao.insertAll(newUser);
+                            updateList();
+                        }
+                    }).start();
+                    break;
+            }
             firstName.setText("");
             lastName.setText("");
             firstName.requestFocus();
@@ -70,6 +88,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateList() {
+        switch (mode) {
+            case REALM:
+                updateListRealm();
+                break;
+            case ROOM:
+                updateListRoom();
+                break;
+        }
+    }
+
+    private void updateListRealm() {
         final StringBuilder sb = new StringBuilder();
         for (RealmUserEntity user : userListResults) {
             sb.append(user.firstName);
@@ -80,8 +109,26 @@ public class MainActivity extends AppCompatActivity {
         userList.setText(sb.toString());
     }
 
+    private void updateListRoom() {
+        new Thread(new Runnable() {
+            public void run() {
+                List<UserEntity> users = userDao.getAll();
+                final StringBuilder sb = new StringBuilder();
+                for (UserEntity user : users) {
+                    sb.append(user.firstName + " " + user.lastName + "\n");
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        userList.setText(sb.toString());
+                    }
+                });
+            }
+        }).start();
+    }
+
     public void toggleButtonClicked(View view) {
-        switch(mode) {
+        switch (mode) {
             case REALM:
                 mode = PersistenceMode.ROOM;
                 break;
