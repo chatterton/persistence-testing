@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.realm.Realm;
 import jc.evaluation.dbtest.App;
 import jc.evaluation.dbtest.persistence.room.RoomTestDatabase;
 import jc.evaluation.dbtest.persistence.room.UserDao;
@@ -26,6 +27,12 @@ public class PersistenceModule {
     UserDao userDaoProvider(App app) {
         createDatabaseIfNecessary(app);
         return db.userDao();
+    }
+
+    // Not a singleton because individual realm refs must be provided per thread
+    @Provides
+    Realm realmProvider() {
+        return Realm.getDefaultInstance();
     }
 
 }

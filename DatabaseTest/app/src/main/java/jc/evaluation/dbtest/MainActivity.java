@@ -11,12 +11,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import jc.evaluation.dbtest.persistence.realm.RealmUserService;
 import jc.evaluation.dbtest.persistence.room.UserEntity;
 import jc.evaluation.dbtest.persistence.room.UserDao;
 
 public class MainActivity extends AppCompatActivity {
 
     @Inject UserDao userDao;
+
+    @Inject RealmUserService userService;
 
     private TextView userList;
     private EditText firstName;
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         ((App)getApplication()).getActivityComponent().inject(this);
         Log.i("_JC", "here's the userdao: "+userDao);
+        Log.i("_JC", "here's the userservice: "+userService);
 
         userList = (TextView)findViewById(R.id.main_userlist);
         firstName = (EditText)findViewById(R.id.main_firstname);
