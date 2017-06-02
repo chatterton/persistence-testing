@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -23,8 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView userList;
     private EditText firstName;
     private EditText lastName;
+    private Button toggleButton;
 
     private RealmResults<RealmUserEntity> userListResults;
+
+    private PersistenceMode mode = PersistenceMode.REALM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
         userList = (TextView)findViewById(R.id.main_userlist);
         firstName = (EditText)findViewById(R.id.main_firstname);
         lastName = (EditText)findViewById(R.id.main_lastname);
+        toggleButton = (Button)findViewById(R.id.main_toggle);
+
+        updateToggle();
 
         userListResults = userService.getAll();
         userListResults.addChangeListener(new RealmChangeListener<RealmResults<RealmUserEntity>>() {
@@ -73,11 +80,33 @@ public class MainActivity extends AppCompatActivity {
         userList.setText(sb.toString());
     }
 
+    public void toggleButtonClicked(View view) {
+        switch(mode) {
+            case REALM:
+                mode = PersistenceMode.ROOM;
+                break;
+            case ROOM:
+                mode = PersistenceMode.REALM;
+                break;
+        }
+        updateList();
+        updateToggle();
+    }
+
+    private void updateToggle() {
+        toggleButton.setText("Persistence mode: "+mode);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         userListResults.removeAllChangeListeners();
         userService.finish();
+    }
+
+    private enum PersistenceMode {
+        REALM,
+        ROOM
     }
 
 }
