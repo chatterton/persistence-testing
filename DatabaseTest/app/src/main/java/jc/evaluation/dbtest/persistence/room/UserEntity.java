@@ -1,4 +1,4 @@
-package jc.evaluation.dbtest.persistence;
+package jc.evaluation.dbtest.persistence.room;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
