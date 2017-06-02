@@ -6,7 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ import javax.inject.Inject;
 
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import jc.evaluation.dbtest.persistence.User;
 import jc.evaluation.dbtest.persistence.realm.RealmUserEntity;
 import jc.evaluation.dbtest.persistence.realm.RealmUserService;
 import jc.evaluation.dbtest.persistence.room.UserDao;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     @Inject UserDao userDao;
     @Inject RealmUserService userService;
 
-    private TextView userList;
+    private LinearLayout userList;
     private EditText firstName;
     private EditText lastName;
     private Button toggleButton;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("_JC", "here's the userdao: "+userDao);
         Log.i("_JC", "here's the userservice: "+userService);
 
-        userList = (TextView)findViewById(R.id.main_userlist);
+        userList = (LinearLayout) findViewById(R.id.main_userlist);
         firstName = (EditText)findViewById(R.id.main_firstname);
         lastName = (EditText)findViewById(R.id.main_lastname);
         toggleButton = (Button)findViewById(R.id.main_toggle);
@@ -98,29 +99,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void appendToList(User user) {
+        Button button = new Button(this);
+        button.setTag(user);
+        button.setText(user.getName()+": "+user.getClicks());
+        userList.addView(button);
+    }
+
     private void updateListRealm() {
-        final StringBuilder sb = new StringBuilder();
+        userList.removeAllViews();
         for (RealmUserEntity user : userListResults) {
-            sb.append(user.firstName);
-            sb.append(" ");
-            sb.append(user.lastName);
-            sb.append("\n");
+            appendToList(user);
         }
-        userList.setText(sb.toString());
     }
 
     private void updateListRoom() {
         new Thread(new Runnable() {
             public void run() {
-                List<UserEntity> users = userDao.getAll();
-                final StringBuilder sb = new StringBuilder();
-                for (UserEntity user : users) {
-                    sb.append(user.firstName + " " + user.lastName + "\n");
-                }
+                final List<UserEntity> users = userDao.getAll();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        userList.setText(sb.toString());
+                        userList.removeAllViews();
+                        for (User user : users) {
+                            appendToList(user);
+                        }
                     }
                 });
             }
