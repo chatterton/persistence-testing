@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -17,12 +18,15 @@ import io.realm.RealmResults;
 import jc.evaluation.dbtest.persistence.User;
 import jc.evaluation.dbtest.persistence.realm.RealmUserEntity;
 import jc.evaluation.dbtest.persistence.realm.RealmUserService;
+import jc.evaluation.dbtest.persistence.room.ClickDao;
+import jc.evaluation.dbtest.persistence.room.ClickEntity;
 import jc.evaluation.dbtest.persistence.room.UserDao;
 import jc.evaluation.dbtest.persistence.room.UserEntity;
 
 public class MainActivity extends AppCompatActivity {
 
     @Inject UserDao userDao;
+    @Inject ClickDao clickDao;
     @Inject RealmUserService userService;
 
     private LinearLayout userList;
@@ -105,6 +109,15 @@ public class MainActivity extends AppCompatActivity {
                 userService.addClickToUser((RealmUserEntity) user);
                 break;
             case ROOM:
+                final ClickEntity click = new ClickEntity();
+                click.parentId = user.getId();
+                click.timestamp = new Date();
+                new Thread(new Runnable() {
+                    public void run() {
+                        clickDao.insertAll(click);
+                        updateList();
+                    }
+                }).start();
                 break;
         }
     }
@@ -132,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateListRoom() {
         new Thread(new Runnable() {
             public void run() {
-                final List<UserEntity> users = userDao.getAll();
+                final List<UserDao.UserWithClicks> users = userDao.getAllWithClicks();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

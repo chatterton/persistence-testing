@@ -2,6 +2,7 @@ package jc.evaluation.dbtest.persistence.room;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 import jc.evaluation.dbtest.persistence.User;
@@ -26,5 +27,10 @@ public class UserEntity implements User {
     @Override
     public int getClicks() {
         return -1;
+    }
+
+    @Override
+    public int getId() {
+        return uid;
     }
 }

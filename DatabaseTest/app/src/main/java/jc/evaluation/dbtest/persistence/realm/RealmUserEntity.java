@@ -29,4 +29,9 @@ public class RealmUserEntity extends RealmObject implements User {
         return clicks.size();
     }
 
+    @Override
+    public int getId() {
+        throw new RuntimeException("No bueno");
+    }
+
 }
