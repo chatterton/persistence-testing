@@ -36,6 +36,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'android.arch.persistence.room:runtime:1.0.0-alpha1'
     compile 'com.github.bmoliveira:snake-yaml:v1.18-android'
+    compile 'org.immutables:value:2.5.3'
+    provided 'org.immutables:builder:2.5.3'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
