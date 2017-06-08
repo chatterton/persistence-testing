@@ -7,6 +7,8 @@ import java.util.concurrent.Callable;
 import io.reactivex.Flowable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import jc.testing.databasetest2.model.ImmutableLegislator;
 import jc.testing.databasetest2.model.Legislator;
 import jc.testing.databasetest2.persistence.room.LegislatorDao;
 import jc.testing.databasetest2.persistence.room.RoomLegislatorEntity;
@@ -35,6 +37,37 @@ public class LegislatorStore {
                 return new Object();
             }
         });
+    }
+
+    public Flowable<List<Legislator>> listAll() {
+        switch (mode) {
+            case ROOM:
+                return roomListAll();
+            case REALM:
+                break;
+        }
+        return null;
+    }
+
+    public Flowable<List<Legislator>> roomListAll() {
+        return legislatorDao.getAll()
+                .map(new Function<List<RoomLegislatorEntity>, List<Legislator>>() {
+                    @Override
+                    public List<Legislator> apply(@NonNull List<RoomLegislatorEntity> roomLegislatorEntities) throws Exception {
+                        List<Legislator> list = new ArrayList<>();
+                        for (RoomLegislatorEntity roomLegislatorEntity : roomLegislatorEntities) {
+                            Legislator l = ImmutableLegislator.builder()
+                                    .id(roomLegislatorEntity.id)
+                                    .name(roomLegislatorEntity.name)
+                                    .party(roomLegislatorEntity.party)
+                                    .religion(roomLegislatorEntity.religion)
+                                    .termCount(roomLegislatorEntity.termCount)
+                                    .build();
+                            list.add(l);
+                        }
+                        return list;
+                    }
+                });
     }
 
     public Consumer<List<Legislator>> legislatorPersister() {

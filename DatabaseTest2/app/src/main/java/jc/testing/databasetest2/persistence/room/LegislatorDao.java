@@ -4,13 +4,15 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 
 @Dao
 public interface LegislatorDao {
 
     @Query("SELECT * FROM legislators")
-    Flowable<RoomLegislatorEntity> getAll();
+    Flowable<List<RoomLegislatorEntity>> getAll();
 
     @Insert
     void insert(RoomLegislatorEntity... legislators);
