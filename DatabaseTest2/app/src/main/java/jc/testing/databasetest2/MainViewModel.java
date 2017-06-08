@@ -22,8 +22,8 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void reloadSelected() {
-        System.out.println("STARTED: "+System.currentTimeMillis());
-        legislatorStore.deleteAll2()
+        final long startTime = System.currentTimeMillis();
+        legislatorStore.deleteAll()
                 .subscribeOn(Schedulers.computation())
                 .subscribe(new Consumer<Object>() {
                     @Override
@@ -32,10 +32,11 @@ public class MainViewModel extends AndroidViewModel {
                                 .doFinally(new Action() {
                                     @Override
                                     public void run() throws Exception {
-                                        System.out.println("FINISHED: "+System.currentTimeMillis());
+                                        System.out.println("FINISHED: "+(System.currentTimeMillis() - startTime));
                                     }
                                 })
                                 .subscribeOn(Schedulers.computation())
+                                .toList()
                                 .subscribe(legislatorStore.legislatorPersister());
                     }
                 });

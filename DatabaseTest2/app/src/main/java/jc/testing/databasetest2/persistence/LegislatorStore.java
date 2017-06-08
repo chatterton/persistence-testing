@@ -1,5 +1,7 @@
 package jc.testing.databasetest2.persistence;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Flowable;
@@ -11,7 +13,7 @@ import jc.testing.databasetest2.persistence.room.RoomLegislatorEntity;
 
 public class LegislatorStore {
 
-    private Mode mode = Mode.ROOM;
+    public Mode mode = Mode.ROOM;
 
     private LegislatorDao legislatorDao;
 
@@ -19,7 +21,7 @@ public class LegislatorStore {
         this.legislatorDao = legislatorDao;
     }
 
-    public Flowable<Object> deleteAll2() {
+    public Flowable<Object> deleteAll() {
         return Flowable.fromCallable(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
@@ -35,17 +37,7 @@ public class LegislatorStore {
         });
     }
 
-    public void deleteAll() {
-        switch (mode) {
-            case ROOM:
-                legislatorDao.deleteAll();
-                break;
-            case REALM:
-                break;
-        }
-    }
-
-    public Consumer<Legislator> legislatorPersister() {
+    public Consumer<List<Legislator>> legislatorPersister() {
         switch (mode) {
             case ROOM:
                 return roomLegislatorPersister();
@@ -55,27 +47,23 @@ public class LegislatorStore {
         return null;
     }
 
-    private Consumer<Legislator> roomLegislatorPersister() {
-        return new Consumer<Legislator>() {
+    private Consumer<List<Legislator>> roomLegislatorPersister() {
+        return new Consumer<List<Legislator>>() {
             @Override
-            public void accept(@NonNull Legislator legislator) throws Exception {
-                RoomLegislatorEntity entity = new RoomLegislatorEntity();
-                entity.id = legislator.id();
-                entity.name = legislator.name();
-                entity.party = legislator.party();
-                entity.religion = legislator.religion();
-                entity.termCount = legislator.termCount();
-                legislatorDao.insert(entity);
+            public void accept(@NonNull List<Legislator> legislatorList) throws Exception {
+                List<RoomLegislatorEntity> entityList = new ArrayList<>();
+                for (Legislator legislator : legislatorList) {
+                    RoomLegislatorEntity entity = new RoomLegislatorEntity();
+                    entity.id = legislator.id();
+                    entity.name = legislator.name();
+                    entity.party = legislator.party();
+                    entity.religion = legislator.religion();
+                    entity.termCount = legislator.termCount();
+                    entityList.add(entity);
+                }
+                legislatorDao.insert(entityList.toArray(new RoomLegislatorEntity[entityList.size()]));
             }
         };
-    }
-
-    public void setMode(Mode mode) {
-        this.mode = mode;
-    }
-
-    public Mode getMode() {
-        return mode;
     }
 
     public enum Mode {
