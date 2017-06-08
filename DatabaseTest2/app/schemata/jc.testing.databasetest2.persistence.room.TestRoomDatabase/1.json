@@ -1,0 +1,52 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "cffb5c2dd0f1e891a0b89f3f8635d5bc",
+    "entities": [
+      {
+        "tableName": "legislators",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT, `name` TEXT, `party` TEXT, `religion` TEXT, `termCount` INTEGER, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "party",
+            "columnName": "party",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "religion",
+            "columnName": "religion",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "termCount",
+            "columnName": "termCount",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"cffb5c2dd0f1e891a0b89f3f8635d5bc\")"
+    ]
+  }
+}

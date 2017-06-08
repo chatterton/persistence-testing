@@ -5,15 +5,16 @@ import android.arch.lifecycle.AndroidViewModel;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import jc.testing.databasetest2.model.Legislator;
+import jc.testing.databasetest2.persistence.LegislatorStore;
 
 public class MainViewModel extends AndroidViewModel {
 
     @Inject Loader loader;
+    @Inject LegislatorStore legislatorStore;
 
     public MainViewModel(Application app) {
         super(app);
@@ -21,14 +22,21 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void reloadSelected() {
-        //Loader l = new Loader(this.getApplication());
-        loader.loadData()
+        System.out.println("STARTED: "+System.currentTimeMillis());
+        legislatorStore.deleteAll2()
                 .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Legislator>() {
+                .subscribe(new Consumer<Object>() {
                     @Override
-                    public void accept(@NonNull Legislator legislator) throws Exception {
-                        System.out.println(legislator);
+                    public void accept(@NonNull Object ignore) throws Exception {
+                        loader.loadData()
+                                .doFinally(new Action() {
+                                    @Override
+                                    public void run() throws Exception {
+                                        System.out.println("FINISHED: "+System.currentTimeMillis());
+                                    }
+                                })
+                                .subscribeOn(Schedulers.computation())
+                                .subscribe(legislatorStore.legislatorPersister());
                     }
                 });
     }
