@@ -30,6 +30,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Legislator>> getLegislatorList() {
+        refreshLegislatorList();
         return mutableLegislatorList;
     }
 
@@ -59,6 +60,7 @@ public class MainViewModel extends AndroidViewModel {
 
     private void refreshLegislatorList() {
         legislatorStore.listAll()
+                .subscribeOn(Schedulers.computation())
                 .subscribe(new Consumer<List<Legislator>>() {
                     @Override
                     public void accept(@NonNull List<Legislator> legislators) throws Exception {
