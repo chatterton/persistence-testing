@@ -4,12 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
-import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -27,16 +24,23 @@ public class MainViewModel extends AndroidViewModel {
 
     private MutableLiveData<List<Legislator>> mutableLegislatorList = new MutableLiveData<>();
 
+    private MutableLiveData<String> mutableModeString = new MutableLiveData<>();
+
     private String searchString = "";
 
     public MainViewModel(Application app) {
         super(app);
         ((App)app).getViewModelComponent().inject(this);
+        mutableModeString.postValue(legislatorStore.mode.toString());
     }
 
     public LiveData<List<Legislator>> getLegislatorList() {
         refreshLegislatorList();
         return mutableLegislatorList;
+    }
+
+    public LiveData<String> getMode() {
+        return mutableModeString;
     }
 
     public void reloadSelected() {
@@ -61,6 +65,16 @@ public class MainViewModel extends AndroidViewModel {
                                 .subscribe(legislatorStore.legislatorPersister());
                     }
                 });
+    }
+
+    public void switchSelected() {
+        if (legislatorStore.mode == LegislatorStore.Mode.REALM) {
+            legislatorStore.mode = LegislatorStore.Mode.ROOM;
+        } else {
+            legislatorStore.mode = LegislatorStore.Mode.REALM;
+        }
+        mutableModeString.postValue(legislatorStore.mode.toString());
+        refreshLegislatorList();
     }
 
     public void setSearchString(String search) {

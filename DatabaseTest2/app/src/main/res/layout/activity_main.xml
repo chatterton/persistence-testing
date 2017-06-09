@@ -15,16 +15,25 @@
         android:hint="Search"
         app:layout_constraintBottom_toTopOf="@+id/recyclerview"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/switch_button"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/switch_button"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:onClick="switchButtonClicked"
+        app:layout_constraintLeft_toRightOf="@+id/searchtext"
         app:layout_constraintRight_toLeftOf="@+id/reload_button"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/reload_button"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:onClick="loadButtonClicked"
         android:text="Reload"
-        app:layout_constraintLeft_toRightOf="@+id/searchtext"
+        app:layout_constraintLeft_toRightOf="@+id/switch_button"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
