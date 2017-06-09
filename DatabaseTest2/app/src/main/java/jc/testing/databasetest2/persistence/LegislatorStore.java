@@ -39,18 +39,18 @@ public class LegislatorStore {
         });
     }
 
-    public Flowable<List<Legislator>> listAll() {
+    public Flowable<List<Legislator>> listAll(String name) {
         switch (mode) {
             case ROOM:
-                return roomListAll();
+                return roomListAll("%"+name+"%");
             case REALM:
                 break;
         }
         return null;
     }
 
-    public Flowable<List<Legislator>> roomListAll() {
-        return legislatorDao.getAll()
+    public Flowable<List<Legislator>> roomListAll(String name) {
+        return legislatorDao.getAll(name)
                 .map(new Function<List<RoomLegislatorEntity>, List<Legislator>>() {
                     @Override
                     public List<Legislator> apply(@NonNull List<RoomLegislatorEntity> roomLegislatorEntities) throws Exception {

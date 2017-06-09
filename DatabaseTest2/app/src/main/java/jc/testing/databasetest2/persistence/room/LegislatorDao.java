@@ -11,8 +11,8 @@ import io.reactivex.Flowable;
 @Dao
 public interface LegislatorDao {
 
-    @Query("SELECT * FROM legislators")
-    Flowable<List<RoomLegislatorEntity>> getAll();
+    @Query("SELECT * FROM legislators WHERE name LIKE :name")
+    Flowable<List<RoomLegislatorEntity>> getAll(String name);
 
     @Insert
     void insert(RoomLegislatorEntity... legislators);

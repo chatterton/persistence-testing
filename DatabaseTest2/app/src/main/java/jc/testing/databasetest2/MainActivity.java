@@ -7,14 +7,22 @@ import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 import jc.testing.databasetest2.model.Legislator;
 
 public class MainActivity extends LifecycleActivity {
@@ -44,12 +52,20 @@ public class MainActivity extends LifecycleActivity {
             }
         });
 
+        EditText editText = (EditText) findViewById(R.id.searchtext);
+        RxTextView.textChanges(editText)
+                .debounce(200, TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<CharSequence>() {
+                    @Override
+                    public void accept(@NonNull CharSequence s) throws Exception {
+                        viewModel.setSearchString(s.toString());
+                    }
+                });
     }
 
     public void loadButtonClicked(View view) {
         viewModel.reloadSelected();
     }
-
 
     private class LegislatorAdapter extends RecyclerView.Adapter<LegislatorAdapter.ViewHolder> {
 

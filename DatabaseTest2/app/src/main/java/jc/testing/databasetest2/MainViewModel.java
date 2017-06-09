@@ -4,9 +4,12 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Observer;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -23,6 +26,8 @@ public class MainViewModel extends AndroidViewModel {
     @Inject LegislatorStore legislatorStore;
 
     private MutableLiveData<List<Legislator>> mutableLegislatorList = new MutableLiveData<>();
+
+    private String searchString = "";
 
     public MainViewModel(Application app) {
         super(app);
@@ -58,8 +63,13 @@ public class MainViewModel extends AndroidViewModel {
                 });
     }
 
+    public void setSearchString(String search) {
+        this.searchString = search;
+        refreshLegislatorList();
+    }
+
     private void refreshLegislatorList() {
-        legislatorStore.listAll()
+        legislatorStore.listAll(searchString)
                 .subscribeOn(Schedulers.computation())
                 .subscribe(new Consumer<List<Legislator>>() {
                     @Override
