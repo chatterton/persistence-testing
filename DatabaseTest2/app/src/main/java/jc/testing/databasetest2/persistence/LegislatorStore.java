@@ -4,23 +4,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.reactivex.Flowable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import jc.testing.databasetest2.model.ImmutableLegislator;
 import jc.testing.databasetest2.model.Legislator;
+import jc.testing.databasetest2.persistence.realm.RealmLegislatorEntity;
+import jc.testing.databasetest2.persistence.realm.RealmLegislatorService;
 import jc.testing.databasetest2.persistence.room.LegislatorDao;
 import jc.testing.databasetest2.persistence.room.RoomLegislatorEntity;
 
+@Singleton
 public class LegislatorStore {
 
     public Mode mode = Mode.ROOM;
 
-    private LegislatorDao legislatorDao;
+    private final LegislatorDao legislatorDao;
+    private final RealmLegislatorService realmLegislatorService;
 
-    public LegislatorStore(LegislatorDao legislatorDao) {
+    @Inject
+    public LegislatorStore(LegislatorDao legislatorDao, RealmLegislatorService rls) {
         this.legislatorDao = legislatorDao;
+        this.realmLegislatorService = rls;
     }
 
     public Flowable<Object> deleteAll() {
@@ -32,6 +43,7 @@ public class LegislatorStore {
                         legislatorDao.deleteAll();
                         break;
                     case REALM:
+                        realmLegislatorService.deleteAll();
                         break;
                 }
                 return new Object();
@@ -44,7 +56,7 @@ public class LegislatorStore {
             case ROOM:
                 return roomListAll("%"+name+"%");
             case REALM:
-                break;
+                return realmListAll(name);
         }
         return null;
     }
@@ -70,12 +82,35 @@ public class LegislatorStore {
                 });
     }
 
+    public Flowable<List<Legislator>> realmListAll(final String name) {
+        return Flowable.fromCallable(new Callable<List<Legislator>>() {
+            @Override
+            public List<Legislator> call() throws Exception {
+                final Realm realm = Realm.getDefaultInstance();
+                final RealmResults<RealmLegislatorEntity> entities = realmLegislatorService.getAll(name, realm);
+                List<Legislator> list = new ArrayList<>();
+                for (RealmLegislatorEntity entity : entities) {
+                    Legislator l = ImmutableLegislator.builder()
+                            .id(entity.id)
+                            .name(entity.name)
+                            .party(entity.getParty())
+                            .religion(entity.religion)
+                            .termCount(entity.termCount)
+                            .build();
+                    list.add(l);
+                }
+                realm.close();
+                return list;
+            }
+        });
+    }
+
     public Consumer<List<Legislator>> legislatorPersister() {
         switch (mode) {
             case ROOM:
                 return roomLegislatorPersister();
             case REALM:
-                break;
+                return realmLegislatorPersister();
         }
         return null;
     }
@@ -95,6 +130,15 @@ public class LegislatorStore {
                     entityList.add(entity);
                 }
                 legislatorDao.insert(entityList.toArray(new RoomLegislatorEntity[entityList.size()]));
+            }
+        };
+    }
+
+    private Consumer<List<Legislator>> realmLegislatorPersister() {
+        return new Consumer<List<Legislator>>() {
+            @Override
+            public void accept(@NonNull List<Legislator> legislators) throws Exception {
+                realmLegislatorService.persistEntities(legislators);
             }
         };
     }

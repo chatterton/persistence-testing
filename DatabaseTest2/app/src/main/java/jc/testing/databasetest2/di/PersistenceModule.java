@@ -8,7 +8,6 @@ import dagger.Module;
 import dagger.Provides;
 import jc.testing.databasetest2.App;
 import jc.testing.databasetest2.Loader;
-import jc.testing.databasetest2.persistence.LegislatorStore;
 import jc.testing.databasetest2.persistence.room.LegislatorDao;
 import jc.testing.databasetest2.persistence.room.TestRoomDatabase;
 
@@ -35,12 +34,6 @@ public class PersistenceModule {
     public LegislatorDao legislatorDaoProvider(App app) {
         createDatabaseIfNecessary(app);
         return testRoomDatabase.legislatorDao();
-    }
-
-    @Singleton
-    @Provides
-    public LegislatorStore provideLegislatorStore(LegislatorDao dao) {
-        return new LegislatorStore(dao);
     }
 
 }

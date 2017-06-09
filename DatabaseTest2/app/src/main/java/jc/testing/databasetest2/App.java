@@ -2,6 +2,8 @@ package jc.testing.databasetest2;
 
 import android.app.Application;
 
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import jc.testing.databasetest2.di.ApplicationComponent;
 import jc.testing.databasetest2.di.ApplicationModule;
 import jc.testing.databasetest2.di.DaggerApplicationComponent;
@@ -22,6 +24,14 @@ public class App extends Application {
         viewModelComponent = DaggerViewModelComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+
+        // Initialize Realm. Should only be done once when the application starts.
+        Realm.init(this);
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder()
+                .schemaVersion(1) // increment this on schema update
+                .build();
+        Realm.setDefaultConfiguration(realmConfiguration);
     }
 
     public ViewModelComponent getViewModelComponent() {
