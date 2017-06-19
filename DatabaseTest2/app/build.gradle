@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "jc.testing.databasetest2"
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -30,29 +30,30 @@ android {
 }
 
 dependencies {
-    annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha1'
-    annotationProcessor 'android.arch.lifecycle:compiler:1.0.0-alpha1'
+    annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha3'
+    annotationProcessor 'android.arch.lifecycle:compiler:1.0.0-alpha3'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.10'
 
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.0.0-beta2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'android.arch.persistence.room:runtime:1.0.0-alpha1'
-    compile 'android.arch.persistence.room:rxjava2:1.0.0-alpha1'
+    compile 'android.arch.persistence.room:runtime:1.0.0-alpha3'
+    compile 'android.arch.persistence.room:rxjava2:1.0.0-alpha3'
     compile 'com.github.bmoliveira:snake-yaml:v1.18-android'
     compile 'org.immutables:value:2.5.3'
+    annotationProcessor 'org.immutables:value:2.5.3'
     provided 'org.immutables:builder:2.5.3'
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'android.arch.lifecycle:runtime:1.0.0-alpha1'
-    compile 'android.arch.lifecycle:extensions:1.0.0-alpha1'
+    compile 'android.arch.lifecycle:runtime:1.0.0-alpha3'
+    compile 'android.arch.lifecycle:extensions:1.0.0-alpha3'
     compile 'com.google.dagger:dagger:2.10'
     provided  'javax.annotation:jsr250-api:1.0'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:26.0.0-beta2'
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
-    testCompile 'android.arch.persistence.room:testing:1.0.0-alpha1'
+    testCompile 'android.arch.persistence.room:testing:1.0.0-alpha3'
 }
