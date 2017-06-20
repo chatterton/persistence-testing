@@ -11,11 +11,8 @@ import io.reactivex.Flowable;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.realm.Realm;
-import io.realm.RealmResults;
 import jc.testing.databasetest2.model.ImmutableLegislator;
 import jc.testing.databasetest2.model.Legislator;
-import jc.testing.databasetest2.persistence.realm.RealmLegislatorEntity;
 import jc.testing.databasetest2.persistence.realm.RealmLegislatorService;
 import jc.testing.databasetest2.persistence.room.LegislatorDao;
 import jc.testing.databasetest2.persistence.room.RoomLegislatorEntity;
@@ -86,21 +83,7 @@ public class LegislatorStore {
         return Flowable.fromCallable(new Callable<List<Legislator>>() {
             @Override
             public List<Legislator> call() throws Exception {
-                final Realm realm = Realm.getDefaultInstance();
-                final RealmResults<RealmLegislatorEntity> entities = realmLegislatorService.getAll(name, realm);
-                List<Legislator> list = new ArrayList<>();
-                for (RealmLegislatorEntity entity : entities) {
-                    Legislator l = ImmutableLegislator.builder()
-                            .id(entity.id)
-                            .name(entity.name)
-                            .party(entity.getParty())
-                            .religion(entity.religion)
-                            .termCount(entity.termCount)
-                            .build();
-                    list.add(l);
-                }
-                realm.close();
-                return list;
+                return realmLegislatorService.getAll(name);
             }
         });
     }
